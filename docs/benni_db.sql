@@ -43,6 +43,7 @@ CREATE TABLE user_station (
   station_id  TINYINT UNSIGNED NOT NULL,
   time_start  DATETIME         NOT NULL DEFAULT CURRENT_TIMESTAMP,
   time_end    DATETIME         NULL,          -- NULL = Station noch nicht gelöst
+  feedback    VARCHAR(255)     NULL,          -- Optionales Feedback des Users zur Station
   PRIMARY KEY (user_id, station_id),
   KEY idx_station (station_id),
   CONSTRAINT fk_us_user    FOREIGN KEY (user_id)    REFERENCES `user` (user_id)
