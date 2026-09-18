@@ -14,13 +14,12 @@ def publish_message(topic: str, message: str, hostname: str = "localhost"):
 
 
 {
-  "device_id": "sensor-01",
-  "timestamp": "2026-09-18T14:32:00Z",
-  "data": {
-    "temperature": 23.5,
-    "humidity": 61
-  },
-  "status": "ok"
+  "station_id": "sensor-01",
+  "user_code": "ADDXE",
+  "timestamp": "<timestamp>",
+  "difficulty": "easy, medium, hard",
+  "feedback": "happy, neutral, unhappy",
+
 }
 g = ("x",3,2)
 print(g)
