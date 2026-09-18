@@ -19,7 +19,7 @@ CREATE TABLE `user` (
   user_id     INT UNSIGNED NOT NULL AUTO_INCREMENT,
   user_name   VARCHAR(100) NOT NULL,
   user_code   INT NOT NULL,
-  difficulty  ENUM('leicht', 'mittel', 'schwer') NOT NULL DEFAULT 'mittel',
+  difficulty  ENUM('easy', 'medium', 'hard') NOT NULL DEFAULT 'medium',
   PRIMARY KEY (user_id),
   UNIQUE KEY uq_user_code (user_code)
 ) ENGINE=InnoDB;
@@ -41,8 +41,8 @@ CREATE TABLE station (
 CREATE TABLE user_station (
   user_id     INT UNSIGNED     NOT NULL,
   station_id  TINYINT UNSIGNED NOT NULL,
-  time_start  DATETIME         NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  time_end    DATETIME         NULL,          -- NULL = Station noch nicht gelöst
+  start_time  DATETIME         NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  end_time    DATETIME         NULL,          -- NULL = Station noch nicht gelöst
   feedback    VARCHAR(255)     NULL,          -- Optionales Feedback des Users zur Station
   PRIMARY KEY (user_id, station_id),
   KEY idx_station (station_id),
@@ -50,7 +50,7 @@ CREATE TABLE user_station (
     ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT fk_us_station FOREIGN KEY (station_id) REFERENCES station (station_id)
     ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT chk_zeit CHECK (time_end IS NULL OR time_end >= time_start)
+  CONSTRAINT chk_zeit CHECK (end_time IS NULL OR end_time >= start_time)
 ) ENGINE=InnoDB;
 
 -- ---------------------------------------------------------------------
@@ -61,10 +61,10 @@ SELECT
   u.user_id,
   u.user_code,
   u.difficulty,
-  COUNT(us.time_end)                               AS stationen_geloest,
-  MIN(us.time_start)                               AS spielstart,
-  MAX(us.time_end)                                 AS letzte_loesung,
-  TIMEDIFF(MAX(us.time_end), MIN(us.time_start))   AS gesamtzeit
+  COUNT(us.end_time)                                AS stationen_geloest,
+  MIN(us.start_time)                                AS spielstart,
+  MAX(us.end_time)                                  AS letzte_loesung,
+  TIMEDIFF(MAX(us.end_time), MIN(us.start_time))    AS gesamtzeit
 FROM `user` u
 LEFT JOIN user_station us ON us.user_id = u.user_id
 GROUP BY u.user_id, u.user_code, u.difficulty;
