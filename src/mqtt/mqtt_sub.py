@@ -1,4 +1,5 @@
 import paho.mqtt.client as mqtt
+import json
 
 def sub_connect(client, topic, hostname: str = "localhost"):
     """
@@ -19,11 +20,13 @@ def on_message(client, userdata, message):
         userdata: The private user data as set in Client() or userdata_set().
         message: An instance of MQTTMessage, which contains topic, payload, qos, retain.
     """
-    print(f"Received message on topic {message.topic}: {message.payload.decode()}")
+    Dashboard_Response = json.loads(message.payload.decode())
+    print(Dashboard_Response["is_allowed"])
+    print(Dashboard_Response["difficulty"])
 
 client = mqtt.Client()
 client.on_message = on_message
-sub_connect(client, "your/topic")  # Replace "your/topic" with the actual topic you want to subscribe to
+sub_connect(client, "station/0")  # Replace "your/topic" with the actual topic you want to subscribe to
 client.loop_start()
 
 # Keep the script running to listen for incoming messages

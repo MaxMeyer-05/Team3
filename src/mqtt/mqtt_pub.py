@@ -12,10 +12,9 @@ def publish_message(topic: str, message: str, hostname: str = "localhost"):
     """
     publish.single(topic, message, hostname=hostname)
 
-def create_start_message (user_code):
+def create_start_message (station_id, user_code):
     return {
-
-        "station_id": 0, #Eure Stationsnummer als Integer 1-5
+        "station_id": station_id,
         "user_code": user_code, 
 
         "data":
@@ -24,12 +23,10 @@ def create_start_message (user_code):
         }
     }
 
-def create_end_message (user_code, feedback):
+def create_end_message (station_id, user_code, feedback):
     return {
-
-        "station_id": 0, #Eure Stationsnummer als Integer 1-5
+        "station_id": station_id,
         "user_code": user_code, 
-
         "data":
         {
             "endTime": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"), #Der aktuelle Timestamp
@@ -37,30 +34,14 @@ def create_end_message (user_code, feedback):
         }
     }
 
-{
-  "station_id": "int", #1-5
-  "user_code": "int", # randomly generated 5 number code
-
-  "data":
-  {
-    "startTime": "null", #only on start message
-    "endTime": "null", #only on end message
-    "difficulty": "easy, medium, hard" ,    #only on start message, default = medium
-    "feedback": "happy, neutral, unhappy"   #only on end message
-  }
-}
-
 # Bei Station Start:
-topic = "devices/placeholder"
-user_code = 11111
-
-start_message = create_start_message(user_code)
-publish_message(topic, json.dumps(start_message))
+def Station_Start(station_id = 0, user_code = 00000):
+    topic = "station/"+ str(station_id)
+    start_message = create_start_message(user_code, station_id)
+    publish_message(topic, json.dumps(start_message))
 
 # Bei Station End
-feedback = "happy"
-end_message = create_end_message(user_code, feedback)
-
-# Debug
-#print(json.dumps(start_message))
-#print(json.dumps(end_message))
+def Station_End(station_id = 0, user_code = 00000, feedback = ""):
+    topic = "station/"+ str(station_id)
+    end_message = create_end_message(user_code, station_id, feedback)
+    publish_message(topic, json.dumps(end_message))
