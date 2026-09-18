@@ -24,15 +24,18 @@ def on_message(client, userdata, message):
     print(Dashboard_Response["is_allowed"])
     print(Dashboard_Response["difficulty"])
 
-client = mqtt.Client()
-client.on_message = on_message
-sub_connect(client, "station/0")  # Replace "your/topic" with the actual topic you want to subscribe to
-client.loop_start()
+def mqtt_sub_loop():
+    client = mqtt.Client()
+    client.on_message = on_message
+    sub_connect(client, "station/0")  # Replace "your/topic" with the actual topic you want to subscribe to
+    client.loop_start()
 
-# Keep the script running to listen for incoming messages
-try:
-    while True:
-        pass
-except KeyboardInterrupt:
-    client.loop_stop()
-    client.disconnect()
+    # Keep the script running to listen for incoming messages
+    try:
+        while True:
+            pass
+    except KeyboardInterrupt:
+        client.loop_stop()
+        client.disconnect()
+
+mqtt_sub_loop()

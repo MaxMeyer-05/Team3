@@ -10,7 +10,7 @@ def publish_message(topic: str, message: str, hostname: str = "localhost"):
         message (str): The message payload to send.
         hostname (str, optional): The hostname of the MQTT broker. Defaults to "localhost".
     """
-    publish.single(topic, message, hostname=hostname)
+    publish.single(topic, message, hostname=hostname, qos=1)
 
 def create_start_message (station_id, user_code):
     return {
@@ -38,6 +38,7 @@ def create_end_message (station_id, user_code, feedback):
 def Station_Start(station_id = 0, user_code = 00000):
     topic = "station/"+ str(station_id)
     start_message = create_start_message(user_code, station_id)
+    #print(start_message)
     publish_message(topic, json.dumps(start_message))
 
 # Bei Station End
