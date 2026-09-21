@@ -1,12 +1,10 @@
 import json
-
-import paho.mqtt.client as mqtt
 import service.save_data as save_data
 
 from mqtt.mqtt_pub import publish_message
 from service.rw_json import create_access_response, read_message_json, write_user_json
 
-BROKER_HOST = "192.168.0.10"
+BROKER_HOST = "localhost"
 STATION_TOPIC = "station/0"
 
 def on_message(client, userdata, message):

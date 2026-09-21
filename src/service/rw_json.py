@@ -38,7 +38,7 @@ def create_access_response(user_code: int, station_id: int) -> dict:
             FROM user_station
             WHERE user_id = %s
               AND station_id = %s
-                            AND end_time IS NOT NULL
+                            AND time_end IS NOT NULL
             """,
             (user["user_id"], station_id - 1),
         )

@@ -19,7 +19,7 @@ def save_data(user_code: int, station_id: int, data: dict):
     provided_data = {
         key: value
         for key, value in data.items()
-        if key in {"start_time", "end_time", "difficulty", "feedback"}
+        if key in {"time_start", "time_end", "difficulty", "feedback"}
         and value is not None
     }
     if not provided_data:
@@ -48,7 +48,7 @@ def save_data(user_code: int, station_id: int, data: dict):
             )
 
         # Prepare the station data for insertion or update in the user_station table.
-        station_columns = {"start_time", "end_time", "feedback"}
+        station_columns = {"time_start", "time_end", "feedback"}
         updates = [
             (key, value)
             for key, value in provided_data.items()
