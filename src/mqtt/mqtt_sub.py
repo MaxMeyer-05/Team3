@@ -58,10 +58,3 @@ def on_connect(client, userdata, flags, reason_code, properties=None):
 		properties: MQTT v5.0 properties.
 	"""
 	client.subscribe(STATION_TOPIC)
-
-
-client = mqtt.Client()
-client.on_connect = on_connect
-client.on_message = on_message
-client.connect(BROKER_HOST)
-client.loop_forever()
