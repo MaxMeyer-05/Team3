@@ -21,17 +21,27 @@ def on_message(client, userdata, message):
 
 		print(f"Received message on {message.topic}: {payload}")
 
+		message_type = payload["message_type"]
 		station_id = int(payload["station_id"])
 		user_code = int(payload["user_code"])
 
-        # Generate the access response for the station request.
+		if message_type not in {"access_request", "station_start", "station_end"}:
+			raise ValueError(f"Unknown message_type: {message_type}")
+
+		# Check that the user may access the requested station.
 		access_response = create_access_response(user_code, station_id)
-		if access_response["isAllowed"] and "data" in payload:
+		if message_type in {"station_start", "station_end"}:
+			if "data" not in payload:
+				raise KeyError("data")
 			if not isinstance(payload["data"], dict):
 				raise TypeError("data must be an object")
-			save_data.save_data(user_code, station_id, payload["data"])
+			if access_response["isAllowed"]:
+				save_data.save_data(user_code, station_id, payload["data"])
+			else:
+				print(f"Ignoring unauthorized {message_type} for station {station_id}")
+			return
 
-        # Prepare the response payload for the station.
+		# Only an access request needs an MQTT response.
 		response = {
 			"is_allowed": access_response["isAllowed"],
 			"difficulty": access_response["difficulty"],
