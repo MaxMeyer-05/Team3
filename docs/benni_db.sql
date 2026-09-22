@@ -19,7 +19,8 @@ CREATE TABLE `user` (
   user_id     INT UNSIGNED NOT NULL AUTO_INCREMENT,
   user_name   VARCHAR(100) NOT NULL,
   user_code   INT NOT NULL,
-  difficulty  ENUM('leicht', 'mittel', 'schwer') NOT NULL DEFAULT 'mittel',
+  difficulty  ENUM('easy', 'medium', 'hard') NOT NULL DEFAULT 'medium',
+  created_at  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (user_id),
   UNIQUE KEY uq_user_code (user_code)
 ) ENGINE=InnoDB;
@@ -31,6 +32,7 @@ CREATE TABLE `user` (
 CREATE TABLE station (
   station_id  TINYINT UNSIGNED NOT NULL,
   name        VARCHAR(100)     NOT NULL,
+  ip_address  VARCHAR(45)      NOT NULL,
   PRIMARY KEY (station_id)
 ) ENGINE=InnoDB;
 
@@ -43,6 +45,7 @@ CREATE TABLE user_station (
   station_id  TINYINT UNSIGNED NOT NULL,
   time_start  DATETIME         NOT NULL DEFAULT CURRENT_TIMESTAMP,
   time_end    DATETIME         NULL,          -- NULL = Station noch nicht gelöst
+  feedback    VARCHAR(255)     NULL,          -- Optionales Feedback des Users zur Station
   PRIMARY KEY (user_id, station_id),
   KEY idx_station (station_id),
   CONSTRAINT fk_us_user    FOREIGN KEY (user_id)    REFERENCES `user` (user_id)
@@ -60,10 +63,10 @@ SELECT
   u.user_id,
   u.user_code,
   u.difficulty,
-  COUNT(us.time_end)                               AS stationen_geloest,
-  MIN(us.time_start)                               AS spielstart,
-  MAX(us.time_end)                                 AS letzte_loesung,
-  TIMEDIFF(MAX(us.time_end), MIN(us.time_start))   AS gesamtzeit
+  COUNT(us.time_end)                                AS stationen_geloest,
+  MIN(us.time_start)                                AS spielstart,
+  MAX(us.time_end)                                  AS letzte_loesung,
+  TIMEDIFF(MAX(us.time_end), MIN(us.time_start))    AS gesamtzeit
 FROM `user` u
 LEFT JOIN user_station us ON us.user_id = u.user_id
 GROUP BY u.user_id, u.user_code, u.difficulty;
@@ -71,9 +74,9 @@ GROUP BY u.user_id, u.user_code, u.difficulty;
 -- =====================================================================
 --  Stammdaten: Stationen
 -- =====================================================================
-INSERT INTO station (station_id, name) VALUES
-  (1, 'Standort von Benni herausfinden'),
-  (2, 'In das Gebäude gelangen'),
-  (3, 'Orientierung und Einhacken ins System'),
-  (4, 'Benni im Gebäude lokalisieren'),
-  (5, 'Benni befreien und entkommen');
+INSERT INTO station (station_id, ip_address, name) VALUES
+  (1, '192.168.0.1', 'Standort von Benni herausfinden'),
+  (2, '192.168.0.2', 'In das Gebäude gelangen'),
+  (3, '192.168.0.3', 'Orientierung und Einhacken ins System'),
+  (4, '192.168.0.4', 'Benni im Gebäude lokalisieren'),
+  (5, '192.168.0.5', 'Benni befreien und entkommen');

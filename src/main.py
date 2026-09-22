@@ -1,22 +1,16 @@
-import database.db_context as db_context
+import paho.mqtt.client as mqtt
+import mqtt.mqtt_sub as mqtt_sub
 
-# Example usage of the database context functions (only for demonstration purposes))
-def main():
-    connection = db_context.get_db_connection()
-    try:
-        # Example query
-        result = db_context.execute_query(connection, "SELECT * FROM your_table")
-        print("Query result:")
-        for row in result:
-            print(row)
+BROKER_HOST = "localhost"
 
-        # Example non-query
-        affected_rows = db_context.execute_non_query(
-            connection, 
-            "UPDATE your_table SET column_name = %s WHERE condition_column = %s", ("new_value", "condition_value"))
-        print(f"Number of affected rows: {affected_rows}")
-    finally:
-        db_context.close_db_connection(connection)
+client = mqtt.Client()
+client.on_connect = mqtt_sub.on_connect
+client.on_message = mqtt_sub.on_message
 
-if __name__ == "__main__":
-    main()
+client.connect(BROKER_HOST)
+try:
+    client.loop_forever()
+except KeyboardInterrupt:
+    pass
+finally:
+    client.disconnect()

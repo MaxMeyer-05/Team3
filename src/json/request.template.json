@@ -1,0 +1,10 @@
+{
+  "station_id": 2,
+  "user_code": 1234,
+  "data": {
+    "start_time": null,
+    "end_time": null,
+    "difficulty": null,
+    "feedback": null
+  }
+}
