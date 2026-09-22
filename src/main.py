@@ -16,8 +16,10 @@ def on_access_response(is_allowed: bool):
     """Handle the dashboard decision for a PIN entered at this station."""
     if is_allowed:
         print("Access allowed")
+        # Proceed with starting the station
     else:
         print("Access denied")
+        # Handle access denial, e.g., prompt for PIN again or alert the user
 
 
 client = mqtt.Client()
