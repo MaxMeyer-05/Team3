@@ -19,7 +19,7 @@ back to the station's individual MQTT topic.
 Install the dependency with:
 
 ```powershell
-python -m pip install paho-mqtt
+sudo apt install python3-paho-mqtt
 ```
 
 ## Configuration And Start
