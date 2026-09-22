@@ -28,7 +28,16 @@ def on_message(client, userdata, message):
     """
     try:
         dashboard_response = json.loads(message.payload.decode("utf-8"))
-        print(dashboard_response["is_allowed"])
-        print(dashboard_response.get("difficulty"))
+        is_allowed = dashboard_response["is_allowed"]
+        if not isinstance(is_allowed, bool):
+            raise TypeError("is_allowed must be a boolean")
+
+        print(f"Received dashboard response: {dashboard_response}")
+
+        return is_allowed
     except (json.JSONDecodeError, KeyError, UnicodeDecodeError) as error:
         print(f"Invalid dashboard response on {message.topic}: {error}")
+    except TypeError as error:
+        print(f"Invalid dashboard response on {message.topic}: {error}")
+
+    return None
