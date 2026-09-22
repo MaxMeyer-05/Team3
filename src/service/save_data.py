@@ -1,9 +1,7 @@
 from datetime import datetime
 
 import mysql.connector
-
 import database.db_context as db_context
-
 
 def normalize_station_data(data: dict) -> dict:
     """Convert legacy timestamp field names to the database field names."""
@@ -76,6 +74,9 @@ def save_data(user_code: int, station_id: int, data: dict):
         existing_station = (
             existing_station_data[0] if existing_station_data else {}
         )
+        if existing_station.get("time_end") is not None:
+            provided_data.pop("time_end", None)
+
         time_start = provided_data.get("time_start", existing_station.get("time_start"))
         time_end = provided_data.get("time_end", existing_station.get("time_end"))
         if time_end is not None:

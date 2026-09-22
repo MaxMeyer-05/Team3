@@ -20,6 +20,7 @@ CREATE TABLE `user` (
   user_name   VARCHAR(100) NOT NULL,
   user_code   INT NOT NULL,
   difficulty  ENUM('easy', 'medium', 'hard') NOT NULL DEFAULT 'medium',
+  created_at  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (user_id),
   UNIQUE KEY uq_user_code (user_code)
 ) ENGINE=InnoDB;
