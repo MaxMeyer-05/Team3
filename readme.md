@@ -30,13 +30,6 @@ Set the physical station number in [src/main.py](src/main.py):
 STATION_ID = 1
 ```
 
-Every physical station must use its own ID. The broker address is also defined
-there and in [src/mqtt/mqtt_pub.py](src/mqtt/mqtt_pub.py):
-
-```python
-BROKER_HOST = "192.168.0.10"
-```
-
 Start the MQTT receiver from the project root:
 
 ```powershell
