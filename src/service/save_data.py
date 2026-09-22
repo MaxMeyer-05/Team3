@@ -1,24 +1,31 @@
 import database.db_context as db_context
 
+
+def normalize_station_data(data: dict) -> dict:
+    """Convert legacy timestamp field names to the database field names."""
+    normalized_data = dict(data)
+    if "time_start" not in normalized_data and "start_time" in normalized_data:
+        normalized_data["time_start"] = normalized_data["start_time"]
+    if "time_end" not in normalized_data and "end_time" in normalized_data:
+        normalized_data["time_end"] = normalized_data["end_time"]
+    return normalized_data
+
+
 def save_data(user_code: int, station_id: int, data: dict):
     """
     Save the provided station data for the specified user and station.
     Args:
         user_code (int): The code of the user.
         station_id (int): The ID of the station.
-        data (dict): The station data containing start_time, end_time, difficulty, and feedback.
+        data (dict): The station data containing timestamps, difficulty, and feedback.
     Raises:
         TypeError: If the data is not a dictionary.
         ValueError: If the user_code is unknown or the difficulty is invalid.
     """
-    if not isinstance(data, dict):
-        raise TypeError("data must be an object")
-
-    # Filter and prepare the provided station data. 
-    # Only include relevant keys and non-None values.
+    normalized_data = normalize_station_data(data)
     provided_data = {
         key: value
-        for key, value in data.items()
+        for key, value in normalized_data.items()
         if key in {"time_start", "time_end", "difficulty", "feedback"}
         and value is not None
     }

@@ -57,8 +57,8 @@ access is granted.
 	"station_id": 2,
 	"user_code": 1234,
 	"data": {
-		"time_start": "2026-09-22 10:00:00",
-		"time_end": "2026-09-22 10:05:00",
+		"start_time": "2026-09-22 10:00:00",
+		"end_time": "2026-09-22 10:05:00",
 		"difficulty": "medium",
 		"feedback": "Task completed"
 	}
@@ -66,9 +66,9 @@ access is granted.
 ```
 
 The permitted values for `difficulty` are `easy`, `medium`, and `hard`. For a
-station that is not yet completed, omit `time_end` or set it to `null`. The
-fields use the database names `time_start` and `time_end`, not `start_time` and
-`end_time`.
+station that is not yet completed, omit `end_time` or set it to `null`. The
+service maps JSON fields `start_time` and `end_time` to the database columns
+`time_start` and `time_end`.
 
 ### Service Response
 
