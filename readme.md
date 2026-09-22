@@ -17,7 +17,9 @@ dashboard or high-score display.
 Install the dependencies with:
 
 ```powershell
-python -m pip install paho-mqtt mysql-connector-python
+sudo apt update
+sudo apt install python3-pip
+sudo pip3 install paho-mqtt mysql-connector-python
 ```
 
 ## Setup and Start
