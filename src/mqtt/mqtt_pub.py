@@ -2,7 +2,10 @@ import paho.mqtt.publish as publish
 import json
 from datetime import datetime, timezone
 
-def publish_message(topic: str, message: str, hostname: str = "localhost"):
+BROKER_HOST = "192.168.0.10"
+DASHBOARD_TOPIC = "dashboard"
+
+def publish_message(topic: str, message: str, hostname: str = BROKER_HOST):
     """
     Publishes a single MQTT message to the specified topic on the given hostname.   
     Args:
@@ -12,37 +15,47 @@ def publish_message(topic: str, message: str, hostname: str = "localhost"):
     """
     publish.single(topic, message, hostname=hostname, qos=1)
 
-def create_start_message (station_id, user_code):
+
+def create_access_message(station_id: int, user_code: int) -> dict:
+    """Create a request that asks whether a group may start this station."""
     return {
         "station_id": station_id,
-        "user_code": user_code, 
-
-        "data":
-        {
-            "startTime": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"), #Der aktuelle Timestamp
-        }
+        "user_code": user_code,
     }
 
-def create_end_message (station_id, user_code, feedback):
+
+def create_start_message(station_id: int, user_code: int) -> dict:
     return {
         "station_id": station_id,
-        "user_code": user_code, 
-        "data":
-        {
-            "endTime": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"), #Der aktuelle Timestamp
-            "feedback": feedback
-        }
+        "user_code": user_code,
+        "data": {
+            "start_time": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S"),
+        },
     }
 
-# Bei Station Start:
-def Station_Start(station_id = 0, user_code = 00000):
-    topic = "station/"+ str(station_id)
-    start_message = create_start_message(user_code, station_id)
-    #print(start_message)
-    publish_message(topic, json.dumps(start_message))
 
-# Bei Station End
-def Station_End(station_id = 0, user_code = 00000, feedback = ""):
-    topic = "station/"+ str(station_id)
-    end_message = create_end_message(user_code, station_id, feedback)
-    publish_message(topic, json.dumps(end_message))
+def create_end_message(station_id: int, user_code: int, feedback: str) -> dict:
+    return {
+        "station_id": station_id,
+        "user_code": user_code,
+        "data": {
+            "end_time": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S"),
+            "feedback": feedback,
+        },
+    }
+
+
+def request_access(station_id: int, user_code: int):
+    """Ask the dashboard whether the group may start the station."""
+    publish_message(DASHBOARD_TOPIC, json.dumps(create_access_message(station_id, user_code)))
+
+
+def station_start(station_id: int, user_code: int):
+    """Report that an allowed group has started the station."""
+    publish_message(DASHBOARD_TOPIC, json.dumps(create_start_message(station_id, user_code)))
+
+
+def station_end(station_id: int, user_code: int, feedback: str = ""):
+    """Report that a group has completed the station."""
+    publish_message(DASHBOARD_TOPIC, json.dumps(create_end_message(station_id, user_code, feedback)))
+
