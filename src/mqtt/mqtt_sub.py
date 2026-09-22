@@ -25,6 +25,7 @@ def on_message(client, userdata, message):
         client: The MQTT client instance.
         userdata: The private user data as set in Client() or userdata_set().
         message: An instance of MQTTMessage, which contains topic, payload, qos, retain.
+    The configured access_response_handler receives the access decision.
     """
     try:
         dashboard_response = json.loads(message.payload.decode("utf-8"))
@@ -33,11 +34,10 @@ def on_message(client, userdata, message):
             raise TypeError("is_allowed must be a boolean")
 
         print(f"Received dashboard response: {dashboard_response}")
-
-        return is_allowed
+        response_handler = userdata.get("access_response_handler")
+        if response_handler is not None:
+            response_handler(is_allowed)
     except (json.JSONDecodeError, KeyError, UnicodeDecodeError) as error:
         print(f"Invalid dashboard response on {message.topic}: {error}")
     except TypeError as error:
         print(f"Invalid dashboard response on {message.topic}: {error}")
-
-    return None

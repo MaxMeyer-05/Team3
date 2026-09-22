@@ -19,6 +19,7 @@ def publish_message(topic: str, message: str, hostname: str = BROKER_HOST):
 def create_access_message(station_id: int, user_code: int) -> dict:
     """Create a request that asks whether a group may start this station."""
     return {
+        "message_type": "access_request",
         "station_id": station_id,
         "user_code": user_code,
     }
@@ -26,6 +27,7 @@ def create_access_message(station_id: int, user_code: int) -> dict:
 
 def create_start_message(station_id: int, user_code: int) -> dict:
     return {
+        "message_type": "station_start",
         "station_id": station_id,
         "user_code": user_code,
         "data": {
@@ -36,6 +38,7 @@ def create_start_message(station_id: int, user_code: int) -> dict:
 
 def create_end_message(station_id: int, user_code: int, feedback: str) -> dict:
     return {
+        "message_type": "station_end",
         "station_id": station_id,
         "user_code": user_code,
         "data": {

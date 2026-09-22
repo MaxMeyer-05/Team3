@@ -60,10 +60,12 @@ def on_game_completed(pin: int):
 		station_end(STATION_ID, pin, feedback="good")
 ```
 
-Call `request_access()` immediately after the ID pad provides a PIN. The
-subscriber's `on_message()` function returns `True` or `False` for a valid
-dashboard response. Then call `station_start()` when the game begins and
-`station_end()` after successful completion.
+Call `request_access()` immediately after the ID pad provides a PIN. Define
+`on_access_response(is_allowed)` in [src/main.py](src/main.py) to start the
+game or display a rejection. The callback receives `True` or `False` for every
+valid dashboard response, so station code does not need to parse JSON. Then
+call `station_start()` when the game begins and `station_end()` after successful
+completion.
 
 ## MQTT Protocol
 
@@ -75,6 +77,7 @@ The station subscribes to this response topic when it connects.
 
 ```json
 {
+	"message_type": "access_request",
 	"station_id": 1,
 	"user_code": 1234
 }
@@ -93,6 +96,7 @@ The station subscribes to this response topic when it connects.
 
 ```json
 {
+	"message_type": "station_start",
 	"station_id": 1,
 	"user_code": 1234,
 	"data": {
@@ -103,6 +107,7 @@ The station subscribes to this response topic when it connects.
 
 ```json
 {
+	"message_type": "station_end",
 	"station_id": 1,
 	"user_code": 1234,
 	"data": {
@@ -114,6 +119,10 @@ The station subscribes to this response topic when it connects.
 
 Timestamps are created automatically in UTC by the provided functions. The
 optional `feedback` field may be used for a user feedback.
+
+The dashboard must only publish an `is_allowed` response for messages with
+`message_type` set to `access_request`. It stores `station_start` and
+`station_end` messages without publishing a response.
 ## Project Structure
 
 ```text

@@ -11,8 +11,22 @@ STATION_ID = 1
 if STATION_ID < 1:
     raise ValueError("STATION_ID must be at least 1")
 
+
+def on_access_response(is_allowed: bool):
+    """Handle the dashboard decision for a PIN entered at this station."""
+    if is_allowed:
+        print("Access allowed")
+    else:
+        print("Access denied")
+
+
 client = mqtt.Client()
-client.user_data_set({"station_id": STATION_ID})
+client.user_data_set(
+    {
+        "station_id": STATION_ID,
+        "access_response_handler": on_access_response,
+    }
+)
 client.on_connect = mqtt_sub.on_connect
 client.on_message = mqtt_sub.on_message
 
