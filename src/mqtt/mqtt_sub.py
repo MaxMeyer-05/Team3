@@ -5,7 +5,7 @@ from mqtt.mqtt_pub import publish_message
 from service.rw_json import create_access_response, read_message_json, write_user_json
 
 BROKER_HOST = "localhost"
-STATION_TOPIC = "station/0"
+STATION_TOPIC = "dashboard"
 
 def on_message(client, userdata, message):
 	"""
@@ -18,6 +18,8 @@ def on_message(client, userdata, message):
 	try:
 		# Decode the incoming MQTT message payload and parse it as JSON.
 		payload = read_message_json(message.payload.decode("utf-8"))
+
+		print(f"Received message on {message.topic}: {payload}")
 
 		station_id = int(payload["station_id"])
 		user_code = int(payload["user_code"])
