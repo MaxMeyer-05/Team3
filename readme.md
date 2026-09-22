@@ -62,9 +62,7 @@ def on_game_completed(pin: int):
 
 Call `request_access()` immediately after the ID pad provides a PIN. The
 subscriber's `on_message()` function returns `True` or `False` for a valid
-dashboard response. Paho MQTT invokes this function asynchronously and ignores
-its return value, so each station team must decide how its own application
-consumes the response. Then call `station_start()` when the game begins and
+dashboard response. Then call `station_start()` when the game begins and
 `station_end()` after successful completion.
 
 ## MQTT Protocol
@@ -109,14 +107,13 @@ The station subscribes to this response topic when it connects.
 	"user_code": 1234,
 	"data": {
 		"end_time": "2026-09-22 10:05:00",
-		"feedback": "Puzzle completed"
+		"feedback": "happy"
 	}
 }
 ```
 
 Timestamps are created automatically in UTC by the provided functions. The
-optional `feedback` field may be used for a short station result or note.
-
+optional `feedback` field may be used for a user feedback.
 ## Project Structure
 
 ```text
