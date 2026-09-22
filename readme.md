@@ -28,8 +28,8 @@ sudo pip3 install paho-mqtt mysql-connector-python
 2. Create the database and import the five game stations:
 
 	 ```powershell
-	 mysql -u root -p < docs/benni_db.sql
-	 ```
+	mysql -u root -p < docs/benni_db.sql
+	```
 
 3. Update the database credentials in
 	[src/database/db_context.py](src/database/db_context.py) for the local
@@ -50,7 +50,7 @@ processes incoming station requests.
 
 ### Station Request
 
-Stations send a JSON request to the `station/0` topic. `station_id` and
+Stations send a JSON request to the `dashboard` topic. `station_id` and
 `user_code` are required. The optional `data` object stores station data when
 access is granted.
 
@@ -62,7 +62,7 @@ access is granted.
 		"start_time": "2026-09-22 10:00:00",
 		"end_time": "2026-09-22 10:05:00",
 		"difficulty": "medium",
-		"feedback": "Task completed"
+		"feedback": "happy"
 	}
 }
 ```
