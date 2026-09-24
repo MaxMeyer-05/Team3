@@ -1,7 +1,4 @@
-import os
-
 import paho.mqtt.client as mqtt
-
 from mqtt import mqtt_sub
 
 
@@ -13,7 +10,11 @@ if STATION_ID < 1:
 
 
 def on_access_response(is_allowed: bool):
-    """Handle the dashboard decision for a PIN entered at this station."""
+    """
+    Handle the response from the access control system.
+    Args:
+        is_allowed (bool): True if access is allowed, False otherwise.
+    """
     if is_allowed:
         print("Access allowed")
         # Proceed with starting the station
