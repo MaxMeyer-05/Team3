@@ -45,12 +45,62 @@ Restart the time synchronization service after saving the file:
 sudo systemctl restart systemd-timesyncd.service
 ```
 
-## Configuration And Start
+## Integrating A Station
 
-Set the physical station number in [src/main.py](src/main.py):
+Add the station-specific startup and game code in [src/main.py](src/main.py).
+Keep the existing MQTT setup at the end of that file: it must run while the
+station is waiting for dashboard responses.
+
+### 1. Configure The Station Number
+
+Set `STATION_ID` to the physical number of this station. Every call below uses
+this same value.
 
 ```python
 STATION_ID = 1
+```
+
+### 2. Request Access After A PIN Is Entered
+
+Import the three public functions near the other imports in the station's game
+code:
+
+```python
+from mqtt.mqtt_pub import request_access, station_end, station_start
+```
+
+Call `request_access()` immediately after the ID pad has supplied a PIN. Save
+that PIN in the game code because it is needed again when the game starts and
+ends.
+
+```python
+def on_pin_entered(pin: int):
+    request_access(STATION_ID, pin)
+```
+
+### 3. Start The Game Only After Approval
+
+Add the station's game-start code to the `if is_allowed:` branch of
+`on_access_response()` in [src/main.py](src/main.py). This callback is called
+after every valid dashboard response. Do not start the game before this
+callback confirms access.
+
+Call `station_start()` at the exact point at which the approved group begins
+the game:
+
+```python
+def on_game_started(pin: int):
+    station_start(STATION_ID, pin)
+```
+
+### 4. Report A Successful Completion
+
+Call `station_end()` once the game has been completed. `feedback` is optional
+and can be an empty string when the station does not collect feedback.
+
+```python
+def on_game_completed(pin: int):
+    station_end(STATION_ID, pin, feedback="happy")
 ```
 
 Start the MQTT receiver from the project root:
@@ -61,34 +111,6 @@ python src/main.py
 
 The program stays connected and listens for dashboard responses. Stop it with
 `Ctrl+C`.
-
-## Using The Station API
-
-Import the public functions into the station's own program:
-
-```python
-from mqtt.mqtt_pub import request_access, station_end, station_start
-
-STATION_ID = 1
-
-def on_pin_entered(pin: int):
-		request_access(STATION_ID, pin)
-
-
-def on_game_started(pin: int):
-		station_start(STATION_ID, pin)
-
-
-def on_game_completed(pin: int):
-		station_end(STATION_ID, pin, feedback="good")
-```
-
-Call `request_access()` immediately after the ID pad provides a PIN. Define
-`on_access_response(is_allowed)` in [src/main.py](src/main.py) to start the
-game or display a rejection. The callback receives `True` or `False` for every
-valid dashboard response, so station code does not need to parse JSON. Then
-call `station_start()` when the game begins and `station_end()` after successful
-completion.
 
 ## MQTT Protocol
 
