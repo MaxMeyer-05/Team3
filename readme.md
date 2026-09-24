@@ -19,7 +19,30 @@ back to the station's individual MQTT topic.
 Install the dependency with:
 
 ```powershell
+
 sudo apt install python3-paho-mqtt
+```
+
+### Raspberry Pi Time Synchronization
+
+Configure every station Raspberry Pi to use the dashboard network time server.
+This ensures that automatically generated start and end timestamps are
+consistent across all stations.
+
+```bash
+sudo nano /etc/systemd/timesyncd.conf
+```
+
+Set the following value below `NTP=`:
+
+```ini
+NTP=192.168.0.254
+```
+
+Restart the time synchronization service after saving the file:
+
+```bash
+sudo systemctl restart systemd-timesyncd.service
 ```
 
 ## Configuration And Start

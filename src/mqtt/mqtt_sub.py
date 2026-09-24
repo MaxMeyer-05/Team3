@@ -1,6 +1,5 @@
 import json
 
-
 def on_connect(client, userdata, flags, reason_code, properties=None):
     """
     Subscribe to the response topic for the configured station.
