@@ -1,24 +1,34 @@
-from datetime import datetime, timezone
+from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 
 import mysql.connector
 import database.db_context as db_context
 
 GERMAN_TIME_ZONE = ZoneInfo("Europe/Berlin")
+TIMESTAMP_MATCH_TOLERANCE = timedelta(minutes=1)
 
-
-def convert_station_timestamp(value):
-    """Convert UTC station timestamps to German local time."""
+def convert_station_timestamp(value, received_at: datetime | None = None):
+    """Use the dashboard reception time when the station time does not match."""
     if not isinstance(value, str):
         return value
     try:
         timestamp = datetime.strptime(value, "%Y-%m-%d %H:%M:%S")
     except ValueError:
         return value
-    return timestamp.replace(tzinfo=timezone.utc).astimezone(GERMAN_TIME_ZONE).strftime(
-        "%Y-%m-%d %H:%M:%S"
-    )
 
+    dashboard_time = received_at or datetime.now(GERMAN_TIME_ZONE)
+    if dashboard_time.tzinfo is not None:
+        dashboard_time = dashboard_time.astimezone(GERMAN_TIME_ZONE).replace(
+            tzinfo=None
+        )
+
+    is_current_german_time = (
+        timestamp.date() == dashboard_time.date()
+        and abs(dashboard_time - timestamp) <= TIMESTAMP_MATCH_TOLERANCE
+    )
+    if is_current_german_time:
+        return timestamp.strftime("%Y-%m-%d %H:%M:%S")
+    return dashboard_time.strftime("%Y-%m-%d %H:%M:%S")
 
 def normalize_station_data(data: dict) -> dict:
     """Convert legacy timestamp field names to the database field names."""
@@ -34,7 +44,6 @@ def normalize_station_data(data: dict) -> dict:
             )
     return normalized_data
 
-
 def parse_timestamp(value, field_name: str) -> datetime:
     """Parse a timestamp accepted by the station JSON protocol."""
     if isinstance(value, datetime):
@@ -47,7 +56,6 @@ def parse_timestamp(value, field_name: str) -> datetime:
         raise ValueError(
             f"{field_name} must use YYYY-MM-DD HH:MM:SS"
         ) from error
-
 
 def save_data(user_code: int, station_id: int, data: dict):
     """
