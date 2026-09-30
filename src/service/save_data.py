@@ -1,7 +1,24 @@
-from datetime import datetime
+from datetime import datetime, timezone
+from zoneinfo import ZoneInfo
 
 import mysql.connector
 import database.db_context as db_context
+
+GERMAN_TIME_ZONE = ZoneInfo("Europe/Berlin")
+
+
+def convert_station_timestamp(value):
+    """Convert UTC station timestamps to German local time."""
+    if not isinstance(value, str):
+        return value
+    try:
+        timestamp = datetime.strptime(value, "%Y-%m-%d %H:%M:%S")
+    except ValueError:
+        return value
+    return timestamp.replace(tzinfo=timezone.utc).astimezone(GERMAN_TIME_ZONE).strftime(
+        "%Y-%m-%d %H:%M:%S"
+    )
+
 
 def normalize_station_data(data: dict) -> dict:
     """Convert legacy timestamp field names to the database field names."""
@@ -10,6 +27,11 @@ def normalize_station_data(data: dict) -> dict:
         normalized_data["time_start"] = normalized_data["start_time"]
     if "time_end" not in normalized_data and "end_time" in normalized_data:
         normalized_data["time_end"] = normalized_data["end_time"]
+    for field_name in ("time_start", "time_end"):
+        if field_name in normalized_data:
+            normalized_data[field_name] = convert_station_timestamp(
+                normalized_data[field_name]
+            )
     return normalized_data
 
 
